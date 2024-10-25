@@ -1,9 +1,6 @@
 import { useMemo } from "react";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import type { Trade } from "../types/trade";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 interface PerformanceChartProps {
   trades: Trade[];
@@ -14,53 +11,45 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
     const sortedTrades = [...trades].sort((a, b) => new Date(a.exitDate).getTime() - new Date(b.exitDate).getTime());
 
     let runningPnL = 0;
-    const data = sortedTrades.map((trade) => {
+    return sortedTrades.map((trade) => {
       const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity * (trade.type === "buy" ? 1 : -1);
       runningPnL += pnl;
       return {
         date: new Date(trade.exitDate).toLocaleDateString(),
-        pnl: runningPnL,
+        cpnl: runningPnL,
+        pnl,
+        symbol: trade.symbol,
       };
     });
-
-    return {
-      labels: data.map((d) => d.date),
-      datasets: [
-        {
-          label: "Cumulative P&L",
-          data: data.map((d) => d.pnl),
-          borderColor: "rgb(59, 130, 246)",
-          backgroundColor: "rgba(59, 130, 246, 0.5)",
-          tension: 0.4,
-        },
-      ],
-    };
   }, [trades]);
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Performance Over Time",
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: (value: number) => `$${value.toFixed(2)}`,
-        },
-      },
-    },
-  };
+  const formatYAxis = (value: number) => `$${value.toFixed(2)}`;
 
   return (
     <div className="p-6 mb-8 bg-white rounded-lg shadow-sm">
-      <Line data={chartData} options={options} />
+      <h2 className="mb-4 text-lg font-semibold text-gray-900">Performance Over Time</h2>
+      <div className="w-full h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
+            <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
+            <Tooltip
+              formatter={(value: number, name: string) => [`$${value.toFixed(2)}`, name]}
+              labelFormatter={(label) => `Date: ${label}`}
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                padding: "8px",
+              }}
+            />
+            <Legend />
+            <Line type="monotone" dataKey="cpnl" name="Cumulative P&L" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="pnl" name="P&L" stroke="#a00aa6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

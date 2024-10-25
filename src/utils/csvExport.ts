@@ -1,13 +1,14 @@
 import type { Trade } from "../types/trade";
 
 export function exportTradesAsCSV(trades: Trade[]) {
-  const headers = ["Symbol", "Type", "Entry Price", "Exit Price", "Quantity", "Entry Date", "Exit Date", "Strategy", "Notes", "P&L"];
+  const headers = ["Symbol", "Type", "Category", "Entry Price", "Exit Price", "Quantity", "Entry Date", "Exit Date", "Strategy", "Notes", "P&L"];
 
   const rows = trades.map((trade) => {
     const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity * (trade.type === "buy" ? 1 : -1);
     return [
       trade.symbol,
       trade.type,
+      trade.category,
       trade.entryPrice,
       trade.exitPrice,
       trade.quantity,

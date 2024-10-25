@@ -2,6 +2,7 @@ export interface Trade {
   id: string;
   symbol: string;
   type: "buy" | "sell";
+  category: "Scalp" | "Swing" | "Daytrade" | "Position";
   entryPrice: number;
   exitPrice: number;
   quantity: number;
