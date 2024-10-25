@@ -32,7 +32,7 @@ export default function Dashboard({ stats }: DashboardProps) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total P&L</p>
-            <p className={`text-2xl font-semibold ${stats.profitLoss >= 0 ? "text-green-600" : "text-red-600"}`}>${stats.profitLoss.toFixed(2)}</p>
+            <p className={`text-2xl font-semibold ${stats.profitLoss >= 0 ? "text-green-600" : "text-red-600"}`}>{stats.profitLoss.toFixed(2)}</p>
           </div>
           {stats.profitLoss >= 0 ? <TrendingUp className="text-green-600" size={24} /> : <TrendingDown className="text-red-600" size={24} />}
         </div>

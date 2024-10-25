@@ -9,22 +9,21 @@ interface PerformanceChartProps {
 
 export default function PerformanceChart({ trades }: PerformanceChartProps) {
   const chartData = useMemo(() => {
-    const sortedTrades = [...trades].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+    const pnlByDate = trades.reduce((acc, trade) => {
+      const date = new Date(trade.endDate).toLocaleDateString();
+      acc[date] = (acc[date] || 0) + calculatePnL(trade);
+      return acc;
+    }, {} as Record<string, number>);
 
     let runningPnL = 0;
-    return sortedTrades.map((trade) => {
-      const pnl = calculatePnL(trade);
-      runningPnL += pnl;
-      return {
-        date: new Date(trade.endDate).toLocaleDateString(),
-        cpnl: runningPnL,
-        pnl,
-        symbol: trade.symbol,
-      };
-    });
+    return Object.keys(pnlByDate)
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+      .map((date) => {
+        const pnl = pnlByDate[date];
+        runningPnL += pnl;
+        return { date, cpnl: runningPnL, pnl };
+      });
   }, [trades]);
-
-  const formatYAxis = (value: number) => `$${value.toFixed(2)}`;
 
   return (
     <div className="p-6 mb-8 bg-white rounded-lg shadow-sm">
@@ -34,9 +33,9 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
           <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" tick={{ fontSize: 12 }} interval="preserveStartEnd" />
-            <YAxis tickFormatter={formatYAxis} tick={{ fontSize: 12 }} />
+            <YAxis tickFormatter={(value: number) => value.toFixed(2)} tick={{ fontSize: 12 }} />
             <Tooltip
-              formatter={(value: number, name: string) => [`$${value.toFixed(2)}`, name]}
+              formatter={(value: number, name: string) => [value.toFixed(2), name]}
               labelFormatter={(label) => `Date: ${label}`}
               contentStyle={{
                 backgroundColor: "white",
@@ -47,7 +46,7 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
             />
             <Legend />
             <Line type="monotone" dataKey="cpnl" name="Cumulative P&L" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-            <Line type="monotone" dataKey="pnl" name="P&L" stroke="#a00aa6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+            <Line type="monotone" dataKey="pnl" name="Daily P&L" stroke="#a00aa6" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

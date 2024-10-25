@@ -24,7 +24,7 @@ type TradeFormData = {
   category: Trade["category"];
   transactions: TransactionFormData[];
   startDate: string;
-  endDate: string;
+  endDate?: string;
   strategy: string;
   notes: string;
 };
@@ -223,7 +223,6 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700">End Date</label>
               <input
-                required
                 type="datetime-local"
                 className="block w-full border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.endDate}
@@ -275,6 +274,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   <input
                     required
                     type="number"
+                    min="0"
                     step="0.01"
                     className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.price}
@@ -287,6 +287,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   <input
                     required
                     type="number"
+                    min="1"
                     className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.quantity}
                     onChange={(e) => updateTransaction(index, "quantity", e.target.value)}
@@ -298,6 +299,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   <input
                     required
                     type="number"
+                    min="0"
                     step="0.01"
                     className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.orderCost}

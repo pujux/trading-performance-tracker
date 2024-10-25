@@ -1,3 +1,4 @@
+import prettyMilliseconds from "pretty-ms";
 import { Trade } from "../types/trade";
 
 export const calculatePnL = (trade: Trade) => {
@@ -26,7 +27,7 @@ export const getTotalOrderCosts = (trade: Trade) => {
   return trade.transactions.reduce((sum, t) => sum + t.orderCost, 0);
 };
 
-export const getPeriod = (trade: Trade) => {
+export const getHoldingPeriod = (trade: Trade) => {
   const start = new Date(trade.startDate);
   const end = new Date(trade.endDate);
 
@@ -38,17 +39,7 @@ export const getPeriod = (trade: Trade) => {
     timeStyle: "short",
   })}`;
 
-  let shortPeriod = `${start.toLocaleString(undefined, {
-    dateStyle: "short",
-  })} - ${end.toLocaleString(undefined, { dateStyle: "short" })}`;
-
-  if (start.toDateString() === end.toDateString()) {
-    shortPeriod = `${start.toLocaleString(undefined, {
-      dateStyle: "short",
-    })} ${start.toLocaleString(undefined, {
-      timeStyle: "short",
-    })} - ${end.toLocaleString(undefined, { timeStyle: "short" })}`;
-  }
+  const shortPeriod = prettyMilliseconds(+end - +start, { compact: true });
 
   return { fullPeriod, shortPeriod };
 };

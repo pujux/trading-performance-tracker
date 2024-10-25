@@ -1,7 +1,7 @@
 import { ArrowUpCircle, ArrowDownCircle, Edit2, Trash, ChevronUp, ChevronDown } from "lucide-react";
 import type { Trade } from "../types/trade";
 import { Fragment, useState } from "react";
-import { calculatePnL, getAveragePrice, getPeriod, getTotalQuantity, getTotalOrderCosts } from "../utils/misc";
+import { calculatePnL, getAveragePrice, getTotalQuantity, getTotalOrderCosts, getHoldingPeriod } from "../utils/misc";
 
 interface TradeListProps {
   trades: Trade[];
@@ -40,7 +40,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Open Qty</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Order Costs</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">P&L</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Period</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Holding Period</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
@@ -53,7 +53,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
             const totalEntryQty = getTotalQuantity(trade, "entry");
             const totalExitQty = getTotalQuantity(trade, "exit");
             const openQty = totalEntryQty - totalExitQty;
-            const tradePeriod = getPeriod(trade);
+            const holdingPeriod = getHoldingPeriod(trade);
             const totalOrderCosts = getTotalOrderCosts(trade);
 
             return (
@@ -85,11 +85,11 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{totalOrderCosts.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     <span className={openQty === 0 ? (pnl >= 0 ? "text-green-600" : "text-red-600") : ""}>
-                      {openQty === 0 ? `${pnl.toFixed(2)}` : "..."}
+                      {openQty === 0 ? pnl.toFixed(2) : "..."}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" title={tradePeriod.fullPeriod}>
-                    {tradePeriod.shortPeriod}
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" title={holdingPeriod.fullPeriod}>
+                    {holdingPeriod.shortPeriod}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     <div className="flex items-center justify-around gap-2">
