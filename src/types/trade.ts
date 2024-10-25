@@ -12,7 +12,7 @@ export interface Trade {
   category: "Scalp" | "Swing" | "Daytrade" | "Position";
   transactions: TradeTransaction[];
   startDate: string;
-  endDate: string;
+  endDate?: string;
   strategy: string;
   notes: string;
 }

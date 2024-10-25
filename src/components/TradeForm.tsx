@@ -24,7 +24,9 @@ type TradeFormData = {
   category: Trade["category"];
   transactions: TransactionFormData[];
   startDate: string;
-  endDate?: string;
+  startTime: string;
+  endDate: string;
+  endTime: string;
   strategy: string;
   notes: string;
 };
@@ -42,9 +44,28 @@ const emptyFormData: TradeFormData = {
   category: "Scalp",
   transactions: [{ ...emptyTransaction }],
   startDate: "",
+  startTime: "",
   endDate: "",
+  endTime: "",
   strategy: "",
   notes: "",
+};
+
+const formatDateTimeForInput = (dateStr?: string) => {
+  if (!dateStr) return { date: "", time: "" };
+  const date = new Date(dateStr);
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return {
+    date: `${date.getFullYear()}-${month}-${day}`,
+    time: date.toLocaleTimeString(undefined, { hour12: false }),
+  };
+};
+
+const combineDateAndTime = (date: string, time: string) => {
+  if (!date) return "";
+  return time ? `${date}T${time}` : `${date}T00:00:00`;
 };
 
 export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTrade, onCancelEdit }: TradeFormProps) {
@@ -53,6 +74,9 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
 
   useEffect(() => {
     if (editingTrade) {
+      const startDateTime = formatDateTimeForInput(editingTrade.startDate);
+      const endDateTime = formatDateTimeForInput(editingTrade.endDate);
+
       setIsOpen(true);
       setFormData({
         symbol: editingTrade.symbol,
@@ -64,8 +88,10 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
           type: t.type,
           orderCost: t.orderCost.toString(),
         })),
-        startDate: editingTrade.startDate,
-        endDate: editingTrade.endDate,
+        startDate: startDateTime.date,
+        startTime: startDateTime.time,
+        endDate: endDateTime.date,
+        endTime: endDateTime.time,
         strategy: editingTrade.strategy,
         notes: editingTrade.notes,
       });
@@ -74,14 +100,23 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const startDateTime = combineDateAndTime(formData.startDate, formData.startTime);
+    const endDateTime = formData.endDate ? combineDateAndTime(formData.endDate, formData.endTime) : undefined;
+
     const tradeData = {
-      ...formData,
+      symbol: formData.symbol,
+      type: formData.type,
+      category: formData.category,
       transactions: formData.transactions.map((t) => ({
         price: Number(t.price),
         quantity: Number(t.quantity),
         type: t.type,
         orderCost: Number(t.orderCost),
       })),
+      startDate: startDateTime,
+      ...(endDateTime && { endDate: endDateTime }),
+      strategy: formData.strategy,
+      notes: formData.notes,
     } as Trade;
 
     if (editingTrade) {
@@ -211,23 +246,41 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
 
             <div className="md:col-span-3">
               <label className="block text-sm font-medium text-gray-700">Start Date</label>
-              <input
-                required
-                type="datetime-local"
-                className="block w-full border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                value={formData.startDate}
-                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-              />
+              <div className="flex gap-2">
+                <input
+                  required
+                  type="date"
+                  className="block flex-1 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  value={formData.startDate}
+                  onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="block w-32 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  value={formData.startTime}
+                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700">End Date</label>
-              <input
-                type="datetime-local"
-                className="block w-full border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                value={formData.endDate}
-                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-              />
+              <label className="block text-sm font-medium text-gray-700">End Date (Optional)</label>
+              <div className="flex gap-2">
+                <input
+                  // required when no open quantity
+                  required={formData.transactions.reduce((sum, t) => sum + (t.type === "entry" ? Number(t.quantity) : -Number(t.quantity)), 0) === 0}
+                  type="date"
+                  className="block flex-1 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  value={formData.endDate}
+                  onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                />
+                <input
+                  type="time"
+                  className="block w-32 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  value={formData.endTime}
+                  onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="md:col-span-6">
@@ -305,6 +358,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     value={transaction.orderCost}
                     onChange={(e) => updateTransaction(index, "orderCost", e.target.value)}
                   />
+
                   {formData.transactions.length > 1 && (
                     <button
                       type="button"

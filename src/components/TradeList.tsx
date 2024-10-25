@@ -12,7 +12,21 @@ interface TradeListProps {
 export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeListProps) {
   const [expandedTrades, setExpandedTrades] = useState<Set<string>>(new Set());
 
-  const sortedTrades = [...trades].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+  const sortedTrades = [...trades].sort((a, b) => {
+    const aHasEndDate = Boolean(a.endDate);
+    const bHasEndDate = Boolean(b.endDate);
+
+    if (aHasEndDate && bHasEndDate) {
+      // Both trades have endDate, sort by endDate ascending
+      return +new Date(b.endDate!) - +new Date(a.endDate!);
+    } else if (!aHasEndDate && !bHasEndDate) {
+      // Neither trade has endDate, sort by startDate ascending
+      return +new Date(b.startDate) - +new Date(a.startDate);
+    } else {
+      // Trades with no endDate come before those with an endDate
+      return +aHasEndDate - +bHasEndDate;
+    }
+  });
 
   const toggleExpand = (tradeId: string) => {
     setExpandedTrades((prev) => {

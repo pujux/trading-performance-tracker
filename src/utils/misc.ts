@@ -29,17 +29,27 @@ export const getTotalOrderCosts = (trade: Trade) => {
 
 export const getHoldingPeriod = (trade: Trade) => {
   const start = new Date(trade.startDate);
-  const end = new Date(trade.endDate);
+  const end = trade.endDate ? new Date(trade.endDate) : null;
 
-  const fullPeriod = `${start.toLocaleString(undefined, {
+  const startStr = start.toLocaleString(undefined, {
     dateStyle: "short",
-    timeStyle: "short",
-  })} - ${end.toLocaleString(undefined, {
+    ...(start.getHours() || start.getMinutes() ? { timeStyle: "short" } : {}),
+  });
+
+  if (!end) {
+    return {
+      fullPeriod: startStr,
+      shortPeriod: startStr,
+    };
+  }
+
+  const endStr = end.toLocaleString(undefined, {
     dateStyle: "short",
-    timeStyle: "short",
-  })}`;
+    ...(end.getHours() || end.getMinutes() ? { timeStyle: "short" } : {}),
+  });
 
-  const shortPeriod = prettyMilliseconds(+end - +start, { compact: true });
-
-  return { fullPeriod, shortPeriod };
+  return {
+    fullPeriod: `${startStr} - ${endStr}`,
+    shortPeriod: prettyMilliseconds(+end - +start, { compact: true }),
+  };
 };
