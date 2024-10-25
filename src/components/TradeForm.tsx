@@ -1,59 +1,92 @@
-import { useState } from "react";
-import { PlusCircle, Download } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { PlusCircle, Download, X } from "lucide-react";
 import type { Trade } from "../types/trade";
 import { exportTradesAsCSV } from "../utils/csvExport";
 
 interface TradeFormProps {
   onAddTrade: (trade: Omit<Trade, "id">) => void;
+  onUpdateTrade: (trade: Trade) => void;
   trades: Trade[];
+  editingTrade: Trade | null;
+  onCancelEdit: () => void;
 }
 
-export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
+const emptyFormData = {
+  symbol: "",
+  type: "buy",
+  entryPrice: "",
+  exitPrice: "",
+  quantity: "",
+  entryDate: "",
+  exitDate: "",
+  strategy: "",
+  notes: "",
+};
+
+export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTrade, onCancelEdit }: TradeFormProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    symbol: "",
-    type: "buy",
-    entryPrice: "",
-    exitPrice: "",
-    quantity: "",
-    entryDate: "",
-    exitDate: "",
-    strategy: "",
-    notes: "",
-  });
+  const [formData, setFormData] = useState(emptyFormData);
+
+  useEffect(() => {
+    if (editingTrade) {
+      setIsOpen(true);
+      setFormData({
+        symbol: editingTrade.symbol,
+        type: editingTrade.type,
+        entryPrice: editingTrade.entryPrice.toString(),
+        exitPrice: editingTrade.exitPrice.toString(),
+        quantity: editingTrade.quantity.toString(),
+        entryDate: editingTrade.entryDate,
+        exitDate: editingTrade.exitDate,
+        strategy: editingTrade.strategy,
+        notes: editingTrade.notes,
+      });
+    }
+  }, [editingTrade]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAddTrade({
+    const tradeData = {
       ...formData,
       entryPrice: Number(formData.entryPrice),
       exitPrice: Number(formData.exitPrice),
       quantity: Number(formData.quantity),
-    } as Trade);
-    setFormData({
-      symbol: "",
-      type: "buy",
-      entryPrice: "",
-      exitPrice: "",
-      quantity: "",
-      entryDate: "",
-      exitDate: "",
-      strategy: "",
-      notes: "",
-    });
+    };
+
+    if (editingTrade) {
+      onUpdateTrade({ ...tradeData, id: editingTrade.id } as Trade);
+    } else {
+      onAddTrade(tradeData as Trade);
+    }
+
+    setFormData(emptyFormData);
     setIsOpen(false);
+    if (editingTrade) {
+      onCancelEdit();
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(emptyFormData);
+    setIsOpen(false);
+    if (editingTrade) {
+      onCancelEdit();
+    }
   };
 
   return (
     <div className="mb-8">
       <div className="flex items-center justify-between">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-        >
-          <PlusCircle size={20} />
-          Add Trade
-        </button>
+        {
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            disabled={!!editingTrade}
+            className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700"
+          >
+            <PlusCircle size={20} />
+            Add Trade
+          </button>
+        }
 
         <button
           onClick={() => exportTradesAsCSV(trades)}
@@ -64,8 +97,15 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
         </button>
       </div>
 
-      {isOpen && (
+      {(isOpen || editingTrade) && (
         <form onSubmit={handleSubmit} className="p-6 mt-4 bg-white rounded-lg shadow-lg">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900">{editingTrade ? "Edit Trade" : "Add New Trade"}</h2>
+            <button type="button" onClick={handleCancel} className="text-gray-500 hover:text-gray-700">
+              <X size={20} />
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-gray-700">Symbol</label>
@@ -171,13 +211,13 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
           <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={handleCancel}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
             >
               Cancel
             </button>
             <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-              Add Trade
+              {editingTrade ? "Update Trade" : "Add Trade"}
             </button>
           </div>
         </form>

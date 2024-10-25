@@ -11,6 +11,7 @@ export default function App() {
     const savedTrades = localStorage.getItem("trades");
     return savedTrades ? JSON.parse(savedTrades) : [];
   });
+  const [editingTrade, setEditingTrade] = useState<Trade | null>(null);
 
   useEffect(() => {
     localStorage.setItem("trades", JSON.stringify(trades));
@@ -43,6 +44,11 @@ export default function App() {
     setTrades((prev) => [...prev, trade]);
   };
 
+  const handleUpdateTrade = (updatedTrade: Trade) => {
+    setTrades((prev) => prev.map((trade) => (trade.id === updatedTrade.id ? updatedTrade : trade)));
+    setEditingTrade(null);
+  };
+
   const handleDeleteTrade = (id: string) => {
     setTrades((prev) => prev.filter((trade) => trade.id !== id));
   };
@@ -57,8 +63,14 @@ export default function App() {
 
         <Dashboard stats={calculateStats()} />
         {trades.length > 1 && <PerformanceChart trades={trades} />}
-        <TradeForm onAddTrade={handleAddTrade} trades={trades} />
-        <TradeList trades={trades} onDeleteTrade={handleDeleteTrade} />
+        <TradeForm
+          onAddTrade={handleAddTrade}
+          onUpdateTrade={handleUpdateTrade}
+          trades={trades}
+          editingTrade={editingTrade}
+          onCancelEdit={() => setEditingTrade(null)}
+        />
+        <TradeList trades={trades} onDeleteTrade={handleDeleteTrade} onEditTrade={setEditingTrade} />
       </div>
     </div>
   );

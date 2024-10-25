@@ -1,12 +1,13 @@
-import { ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { ArrowUpCircle, ArrowDownCircle, Edit2 } from "lucide-react";
 import type { Trade } from "../types/trade";
 
 interface TradeListProps {
   trades: Trade[];
   onDeleteTrade: (id: string) => void;
+  onEditTrade: (trade: Trade) => void;
 }
 
-export default function TradeList({ trades, onDeleteTrade }: TradeListProps) {
+export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeListProps) {
   const calculatePnL = (trade: Trade) => {
     const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
     return trade.type === "buy" ? pnl : -pnl;
@@ -53,9 +54,14 @@ export default function TradeList({ trades, onDeleteTrade }: TradeListProps) {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{trade.strategy}</td>
                 <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <button onClick={() => onDeleteTrade(trade.id)} className="text-red-600 hover:text-red-900">
-                    Delete
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => onEditTrade(trade)} className="text-blue-600 hover:text-blue-900">
+                      <Edit2 size={16} />
+                    </button>
+                    <button onClick={() => onDeleteTrade(trade.id)} className="text-red-600 hover:text-red-900">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             );
