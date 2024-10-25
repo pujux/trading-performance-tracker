@@ -1,7 +1,7 @@
 import { ArrowUpCircle, ArrowDownCircle, Edit2, Trash, ChevronUp, ChevronDown } from "lucide-react";
 import type { Trade } from "../types/trade";
 import { Fragment, useState } from "react";
-import { calculatePnL, getAveragePrice, getPeriod, getTotalQuantity } from "../utils/misc";
+import { calculatePnL, getAveragePrice, getPeriod, getTotalQuantity, getTotalOrderCosts } from "../utils/misc";
 
 interface TradeListProps {
   trades: Trade[];
@@ -38,6 +38,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Avg Exit</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Total Qty</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Open Qty</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Order Costs</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">P&L</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Period</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
@@ -53,6 +54,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
             const totalExitQty = getTotalQuantity(trade, "exit");
             const openQty = totalEntryQty - totalExitQty;
             const tradePeriod = getPeriod(trade);
+            const totalOrderCosts = getTotalOrderCosts(trade);
 
             return (
               <Fragment key={trade.id}>
@@ -80,9 +82,10 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{avgExitPrice.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{totalEntryQty}</td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{openQty}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{totalOrderCosts.toFixed(2)}</td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                     <span className={openQty === 0 ? (pnl >= 0 ? "text-green-600" : "text-red-600") : ""}>
-                      {openQty === 0 ? pnl.toFixed(2) : "..."}
+                      {openQty === 0 ? `${pnl.toFixed(2)}` : "..."}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" title={tradePeriod.fullPeriod}>
@@ -101,7 +104,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                 </tr>
                 {isExpanded && (
                   <tr>
-                    <td colSpan={10} className="p-8 bg-gray-50">
+                    <td colSpan={11} className="p-8 bg-gray-50">
                       <div className="flex flex-col gap-4">
                         <h4 className="font-medium text-gray-900">Transactions</h4>
                         <table className="min-w-full divide-y divide-gray-200">
@@ -110,6 +113,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                               <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Type</th>
                               <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Price</th>
                               <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Quantity</th>
+                              <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Order Cost</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-200">
@@ -126,6 +130,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                                 </td>
                                 <td className="px-4 py-2 text-sm">{transaction.price.toFixed(2)}</td>
                                 <td className="px-4 py-2 text-sm">{transaction.quantity}</td>
+                                <td className="px-4 py-2 text-sm">{transaction.orderCost.toFixed(2)}</td>
                               </tr>
                             ))}
                           </tbody>

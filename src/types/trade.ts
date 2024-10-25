@@ -2,6 +2,7 @@ export interface TradeTransaction {
   price: number;
   quantity: number;
   type: "entry" | "exit";
+  orderCost: number;
 }
 
 export interface Trade {

@@ -15,6 +15,7 @@ type TransactionFormData = {
   price: string;
   quantity: string;
   type: TradeTransaction["type"];
+  orderCost: string;
 };
 
 type TradeFormData = {
@@ -32,6 +33,7 @@ const emptyTransaction: TransactionFormData = {
   price: "",
   quantity: "",
   type: "entry",
+  orderCost: "0",
 };
 
 const emptyFormData: TradeFormData = {
@@ -60,6 +62,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
           price: t.price.toString(),
           quantity: t.quantity.toString(),
           type: t.type,
+          orderCost: t.orderCost.toString(),
         })),
         startDate: editingTrade.startDate,
         endDate: editingTrade.endDate,
@@ -77,6 +80,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
         price: Number(t.price),
         quantity: Number(t.quantity),
         type: t.type,
+        orderCost: Number(t.orderCost),
       })),
     } as Trade;
 
@@ -160,7 +164,12 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                 type="text"
                 className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.symbol}
-                onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    symbol: e.target.value.toUpperCase(),
+                  })
+                }
               />
             </div>
 
@@ -169,7 +178,12 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
               <select
                 className="block w-full p-1 mt-1 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as "buy" | "sell" })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    type: e.target.value as "buy" | "sell",
+                  })
+                }
               >
                 <option value="buy">Buy</option>
                 <option value="sell">Sell</option>
@@ -181,7 +195,12 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
               <select
                 className="block w-full p-1 mt-1 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as Trade["category"] })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    category: e.target.value as Trade["category"],
+                  })
+                }
               >
                 <option value="Scalp">Scalp</option>
                 <option value="Swing">Swing</option>
@@ -237,7 +256,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             </div>
 
             {formData.transactions.map((transaction, index) => (
-              <div key={index} className="relative grid grid-cols-1 gap-4 p-8 border-2 rounded-lg md:p-4 md:pt-6 md:grid-cols-3">
+              <div key={index} className="relative grid grid-cols-1 gap-4 p-8 border-2 rounded-lg md:p-4 md:pt-6 md:grid-cols-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Type</label>
                   <select
@@ -262,23 +281,33 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     onChange={(e) => updateTransaction(index, "price", e.target.value)}
                   />
                 </div>
-                <div className="flex justify-between gap-4">
-                  <div className="flex-grow">
-                    <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input
-                      required
-                      type="number"
-                      className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                      value={transaction.quantity}
-                      onChange={(e) => updateTransaction(index, "quantity", e.target.value)}
-                    />
-                  </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Quantity</label>
+                  <input
+                    required
+                    type="number"
+                    className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    value={transaction.quantity}
+                    onChange={(e) => updateTransaction(index, "quantity", e.target.value)}
+                  />
+                </div>
+
+                <div className="relative">
+                  <label className="block text-sm font-medium text-gray-700">Order Cost</label>
+                  <input
+                    required
+                    type="number"
+                    step="0.01"
+                    className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    value={transaction.orderCost}
+                    onChange={(e) => updateTransaction(index, "orderCost", e.target.value)}
+                  />
                   {formData.transactions.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeTransaction(index)}
-                      className="absolute mt-1 text-red-600 hover:text-red-800 top-3 right-3"
+                      className="absolute right-0 mt-1 text-red-600 hover:text-red-800 -top-6"
                     >
                       <Trash size={20} />
                     </button>

@@ -3,7 +3,7 @@ import { Trade } from "../types/trade";
 export const calculatePnL = (trade: Trade) => {
   const pnl = trade.transactions.reduce((sum, t) => {
     const transactionValue = t.price * t.quantity;
-    return sum + (t.type === "exit" ? transactionValue : -transactionValue);
+    return sum + (t.type === "exit" ? transactionValue : -transactionValue) - t.orderCost;
   }, 0);
 
   return trade.type === "buy" ? pnl : -pnl;
@@ -19,23 +19,33 @@ export const getAveragePrice = (trade: Trade, type: "entry" | "exit") => {
 };
 
 export const getTotalQuantity = (trade: Trade, type: "entry" | "exit") => {
-  console.log(trade.transactions);
   return trade.transactions.filter((t) => t.type === type).reduce((sum, t) => sum + t.quantity, 0);
+};
+
+export const getTotalOrderCosts = (trade: Trade) => {
+  return trade.transactions.reduce((sum, t) => sum + t.orderCost, 0);
 };
 
 export const getPeriod = (trade: Trade) => {
   const start = new Date(trade.startDate);
   const end = new Date(trade.endDate);
 
-  const fullPeriod = `${start.toLocaleString(undefined, { dateStyle: "short", timeStyle: "short" })} - ${end.toLocaleString(undefined, {
+  const fullPeriod = `${start.toLocaleString(undefined, {
+    dateStyle: "short",
+    timeStyle: "short",
+  })} - ${end.toLocaleString(undefined, {
     dateStyle: "short",
     timeStyle: "short",
   })}`;
 
-  let shortPeriod = `${start.toLocaleString(undefined, { dateStyle: "short" })} - ${end.toLocaleString(undefined, { dateStyle: "short" })}`;
+  let shortPeriod = `${start.toLocaleString(undefined, {
+    dateStyle: "short",
+  })} - ${end.toLocaleString(undefined, { dateStyle: "short" })}`;
 
   if (start.toDateString() === end.toDateString()) {
-    shortPeriod = `${start.toLocaleString(undefined, { dateStyle: "short" })} ${start.toLocaleString(undefined, {
+    shortPeriod = `${start.toLocaleString(undefined, {
+      dateStyle: "short",
+    })} ${start.toLocaleString(undefined, {
       timeStyle: "short",
     })} - ${end.toLocaleString(undefined, { timeStyle: "short" })}`;
   }
