@@ -1,7 +1,7 @@
 export interface Trade {
   id: string;
   symbol: string;
-  type: 'buy' | 'sell';
+  type: "buy" | "sell";
   entryPrice: number;
   exitPrice: number;
   quantity: number;

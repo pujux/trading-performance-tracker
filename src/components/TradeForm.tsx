@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
-import { PlusCircle, Download } from 'lucide-react';
-import type { Trade } from '../types/trade';
-import { exportTradesAsCSV } from '../utils/csvExport';
+import { useState } from "react";
+import { PlusCircle, Download } from "lucide-react";
+import type { Trade } from "../types/trade";
+import { exportTradesAsCSV } from "../utils/csvExport";
 
 interface TradeFormProps {
-  onAddTrade: (trade: Omit<Trade, 'id'>) => void;
+  onAddTrade: (trade: Omit<Trade, "id">) => void;
   trades: Trade[];
 }
 
 export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    symbol: '',
-    type: 'buy',
-    entryPrice: '',
-    exitPrice: '',
-    quantity: '',
-    entryDate: '',
-    exitDate: '',
-    strategy: '',
-    notes: ''
+    symbol: "",
+    type: "buy",
+    entryPrice: "",
+    exitPrice: "",
+    quantity: "",
+    entryDate: "",
+    exitDate: "",
+    strategy: "",
+    notes: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,28 +28,28 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
       ...formData,
       entryPrice: Number(formData.entryPrice),
       exitPrice: Number(formData.exitPrice),
-      quantity: Number(formData.quantity)
+      quantity: Number(formData.quantity),
     } as Trade);
     setFormData({
-      symbol: '',
-      type: 'buy',
-      entryPrice: '',
-      exitPrice: '',
-      quantity: '',
-      entryDate: '',
-      exitDate: '',
-      strategy: '',
-      notes: ''
+      symbol: "",
+      type: "buy",
+      entryPrice: "",
+      exitPrice: "",
+      quantity: "",
+      entryDate: "",
+      exitDate: "",
+      strategy: "",
+      notes: "",
     });
     setIsOpen(false);
   };
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
         >
           <PlusCircle size={20} />
           Add Trade
@@ -57,7 +57,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
 
         <button
           onClick={() => exportTradesAsCSV(trades)}
-          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
         >
           <Download size={20} />
           Export CSV
@@ -65,14 +65,14 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
       </div>
 
       {isOpen && (
-        <form onSubmit={handleSubmit} className="mt-4 bg-white p-6 rounded-lg shadow-lg">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="p-6 mt-4 bg-white rounded-lg shadow-lg">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-gray-700">Symbol</label>
               <input
                 required
                 type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.symbol}
                 onChange={(e) => setFormData({ ...formData, symbol: e.target.value.toUpperCase() })}
               />
@@ -81,9 +81,9 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
             <div>
               <label className="block text-sm font-medium text-gray-700">Type</label>
               <select
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.type}
-                onChange={(e) => setFormData({ ...formData, type: e.target.value as 'buy' | 'sell' })}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as "buy" | "sell" })}
               >
                 <option value="buy">Buy</option>
                 <option value="sell">Sell</option>
@@ -96,7 +96,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
                 required
                 type="number"
                 step="0.01"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.entryPrice}
                 onChange={(e) => setFormData({ ...formData, entryPrice: e.target.value })}
               />
@@ -108,7 +108,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
                 required
                 type="number"
                 step="0.01"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.exitPrice}
                 onChange={(e) => setFormData({ ...formData, exitPrice: e.target.value })}
               />
@@ -119,7 +119,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
               <input
                 required
                 type="number"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.quantity}
                 onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
               />
@@ -129,7 +129,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
               <label className="block text-sm font-medium text-gray-700">Strategy</label>
               <input
                 type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.strategy}
                 onChange={(e) => setFormData({ ...formData, strategy: e.target.value })}
               />
@@ -140,7 +140,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
               <input
                 required
                 type="datetime-local"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.entryDate}
                 onChange={(e) => setFormData({ ...formData, entryDate: e.target.value })}
               />
@@ -151,7 +151,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
               <input
                 required
                 type="datetime-local"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.exitDate}
                 onChange={(e) => setFormData({ ...formData, exitDate: e.target.value })}
               />
@@ -161,14 +161,14 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700">Notes</label>
             <textarea
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
               rows={3}
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             />
           </div>
 
-          <div className="mt-4 flex justify-end gap-2">
+          <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
               onClick={() => setIsOpen(false)}
@@ -176,10 +176,7 @@ export default function TradeForm({ onAddTrade, trades }: TradeFormProps) {
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
+            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
               Add Trade
             </button>
           </div>
