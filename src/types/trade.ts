@@ -1,13 +1,17 @@
+export interface TradeTransaction {
+  price: number;
+  quantity: number;
+  type: "entry" | "exit";
+}
+
 export interface Trade {
   id: string;
   symbol: string;
   type: "buy" | "sell";
   category: "Scalp" | "Swing" | "Daytrade" | "Position";
-  entryPrice: number;
-  exitPrice: number;
-  quantity: number;
-  entryDate: string;
-  exitDate: string;
+  transactions: TradeTransaction[];
+  startDate: string;
+  endDate: string;
   strategy: string;
   notes: string;
 }

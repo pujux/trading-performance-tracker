@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import type { Trade } from "../types/trade";
+import { calculatePnL } from "../utils/misc";
 
 interface PerformanceChartProps {
   trades: Trade[];
@@ -8,14 +9,14 @@ interface PerformanceChartProps {
 
 export default function PerformanceChart({ trades }: PerformanceChartProps) {
   const chartData = useMemo(() => {
-    const sortedTrades = [...trades].sort((a, b) => new Date(a.exitDate).getTime() - new Date(b.exitDate).getTime());
+    const sortedTrades = [...trades].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
 
     let runningPnL = 0;
     return sortedTrades.map((trade) => {
-      const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity * (trade.type === "buy" ? 1 : -1);
+      const pnl = calculatePnL(trade);
       runningPnL += pnl;
       return {
-        date: new Date(trade.exitDate).toLocaleDateString(),
+        date: new Date(trade.endDate).toLocaleDateString(),
         cpnl: runningPnL,
         pnl,
         symbol: trade.symbol,

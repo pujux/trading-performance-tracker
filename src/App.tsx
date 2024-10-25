@@ -5,6 +5,7 @@ import TradeList from "./components/TradeList";
 import Dashboard from "./components/Dashboard";
 import PerformanceChart from "./components/PerformanceChart";
 import type { Trade, TradeStats } from "./types/trade";
+import { calculatePnL, getTotalQuantity } from "./utils/misc";
 
 export default function App() {
   const [trades, setTrades] = useState<Trade[]>(() => {
@@ -18,15 +19,10 @@ export default function App() {
   }, [trades]);
 
   const calculateStats = (): TradeStats => {
-    const winningTrades = trades.filter((trade) => {
-      const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
-      return trade.type === "buy" ? pnl > 0 : -pnl > 0;
-    });
+    const closedTrades = trades.filter((trade) => getTotalQuantity(trade, "entry") - getTotalQuantity(trade, "exit") === 0);
+    const winningTrades = closedTrades.filter((trade) => calculatePnL(trade) > 0);
 
-    const totalPnL = trades.reduce((sum, trade) => {
-      const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
-      return sum + (trade.type === "buy" ? pnl : -pnl);
-    }, 0);
+    const totalPnL = closedTrades.reduce((sum, trade) => sum + calculatePnL(trade), 0);
 
     return {
       totalTrades: trades.length,

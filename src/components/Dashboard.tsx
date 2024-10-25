@@ -24,7 +24,7 @@ export default function Dashboard({ stats }: DashboardProps) {
             <p className="text-sm font-medium text-gray-600">Win Rate</p>
             <p className="text-2xl font-semibold text-gray-900">{(stats.winRate * 100).toFixed(1)}%</p>
           </div>
-          <Percent className="text-green-600" size={24} />
+          <Percent className="text-blue-600" size={24} />
         </div>
       </div>
 

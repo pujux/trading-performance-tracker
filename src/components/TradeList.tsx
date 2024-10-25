@@ -1,5 +1,7 @@
-import { ArrowUpCircle, ArrowDownCircle, Edit2, Trash } from "lucide-react";
+import { ArrowUpCircle, ArrowDownCircle, Edit2, Trash, ChevronUp, ChevronDown } from "lucide-react";
 import type { Trade } from "../types/trade";
+import { Fragment, useState } from "react";
+import { calculatePnL, getAveragePrice, getPeriod, getTotalQuantity } from "../utils/misc";
 
 interface TradeListProps {
   trades: Trade[];
@@ -8,9 +10,20 @@ interface TradeListProps {
 }
 
 export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeListProps) {
-  const calculatePnL = (trade: Trade) => {
-    const pnl = (trade.exitPrice - trade.entryPrice) * trade.quantity;
-    return trade.type === "buy" ? pnl : -pnl;
+  const [expandedTrades, setExpandedTrades] = useState<Set<string>>(new Set());
+
+  const sortedTrades = [...trades].sort((a, b) => new Date(a.endDate).getTime() - new Date(b.endDate).getTime());
+
+  const toggleExpand = (tradeId: string) => {
+    setExpandedTrades((prev) => {
+      const set = new Set(prev);
+      if (set.has(tradeId)) {
+        set.delete(tradeId);
+      } else {
+        set.add(tradeId);
+      }
+      return set;
+    });
   };
 
   return (
@@ -21,57 +34,113 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Symbol</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Type</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Category</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Entry</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Exit</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Quantity</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Avg Entry</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Avg Exit</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Total Qty</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Open Qty</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">P&L</th>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Period</th>
-            {/* <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Strategy</th> */}
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {trades.map((trade) => {
+          {sortedTrades.map((trade) => {
             const pnl = calculatePnL(trade);
+            const isExpanded = expandedTrades.has(trade.id);
+            const avgEntryPrice = getAveragePrice(trade, "entry");
+            const avgExitPrice = getAveragePrice(trade, "exit");
+            const totalEntryQty = getTotalQuantity(trade, "entry");
+            const totalExitQty = getTotalQuantity(trade, "exit");
+            const openQty = totalEntryQty - totalExitQty;
+            const tradePeriod = getPeriod(trade);
+
             return (
-              <tr key={trade.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    {pnl >= 0 ? <ArrowUpCircle className="text-green-500" size={20} /> : <ArrowDownCircle className="text-red-500" size={20} />}
-                    {trade.symbol}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${trade.type === "buy" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
-                  >
-                    {trade.type.toUpperCase()}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded-full">{trade.category}</span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">${trade.entryPrice.toFixed(2)}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">${trade.exitPrice.toFixed(2)}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{trade.quantity}</td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <span className={pnl >= 0 ? "text-green-600" : "text-red-600"}>${pnl.toFixed(2)}</span>
-                </td>
-                {/* <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{trade.strategy}</td> */}
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  {trade.entryDate}-{trade.exitDate}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <div className="flex items-center justify-around gap-2">
-                    <button onClick={() => onEditTrade(trade)} className="text-blue-600 hover:text-blue-900">
-                      <Edit2 size={16} />
-                    </button>
-                    <button onClick={() => onDeleteTrade(trade.id)} className="text-red-600 hover:text-red-900">
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              <Fragment key={trade.id}>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => toggleExpand(trade.id)} className="p-1 rounded hover:bg-gray-100">
+                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
+                      {pnl >= 0 ? <ArrowUpCircle className="text-green-500" size={20} /> : <ArrowDownCircle className="text-red-500" size={20} />}
+                      {trade.symbol}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs ${trade.type === "buy" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+                    >
+                      {trade.type.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span className="px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded-full">{trade.category}</span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{avgEntryPrice.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{avgExitPrice.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{totalEntryQty}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">{openQty}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <span className={openQty === 0 ? (pnl >= 0 ? "text-green-600" : "text-red-600") : ""}>
+                      {openQty === 0 ? pnl.toFixed(2) : "..."}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap" title={tradePeriod.fullPeriod}>
+                    {tradePeriod.shortPeriod}
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    <div className="flex items-center justify-around gap-2">
+                      <button onClick={() => onEditTrade(trade)} className="text-blue-600 hover:text-blue-900" title="Edit Trade">
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => onDeleteTrade(trade.id)} className="text-red-600 hover:text-red-900" title="Remove Trade">
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {isExpanded && (
+                  <tr>
+                    <td colSpan={10} className="p-8 bg-gray-50">
+                      <div className="flex flex-col gap-4">
+                        <h4 className="font-medium text-gray-900">Transactions</h4>
+                        <table className="min-w-full divide-y divide-gray-200">
+                          <thead>
+                            <tr>
+                              <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Type</th>
+                              <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Price</th>
+                              <th className="px-4 py-2 text-xs font-medium text-left text-gray-500">Quantity</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {trade.transactions.map((transaction, index) => (
+                              <tr key={index}>
+                                <td className="px-4 py-2 text-sm">
+                                  <span
+                                    className={`px-2 py-1 rounded-full text-xs ${
+                                      transaction.type === "entry" ? "bg-purple-100 text-purple-800" : "bg-orange-100 text-orange-800"
+                                    }`}
+                                  >
+                                    {transaction.type.toUpperCase()}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2 text-sm">{transaction.price.toFixed(2)}</td>
+                                <td className="px-4 py-2 text-sm">{transaction.quantity}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {trade.notes && (
+                          <div>
+                            <h4 className="font-medium text-gray-900">Notes / Learnings</h4>
+                            <p className="mt-1 text-sm text-gray-600">{trade.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             );
           })}
         </tbody>
