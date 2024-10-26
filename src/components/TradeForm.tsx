@@ -72,6 +72,10 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState(emptyFormData);
 
+  const endDateRequired =
+    formData.transactions[0].quantity !== "" &&
+    formData.transactions.reduce((sum, t) => sum + (t.type === "entry" ? Number(t.quantity) : -Number(t.quantity)), 0) === 0;
+
   useEffect(() => {
     if (editingTrade) {
       const startDateTime = formatDateTimeForInput(editingTrade.startDate);
@@ -211,7 +215,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">Type</label>
               <select
-                className="block w-full p-1 mt-1 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full p-1 mt-1 bg-white border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.type}
                 onChange={(e) =>
                   setFormData({
@@ -228,7 +232,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <select
-                className="block w-full p-1 mt-1 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full p-1 mt-1 bg-white border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.category}
                 onChange={(e) =>
                   setFormData({
@@ -245,18 +249,18 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             </div>
 
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700">Start Date</label>
+              <label className="block text-sm font-medium text-gray-700">Start Date & Time</label>
               <div className="flex gap-2">
                 <input
                   required
                   type="date"
-                  className="block flex-1 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                 />
                 <input
                   type="time"
-                  className="block w-32 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.startTime}
                   onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 />
@@ -264,19 +268,19 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             </div>
 
             <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700">End Date (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700">End Date & Time {!endDateRequired && "(Optional)"}</label>
               <div className="flex gap-2">
                 <input
                   // required when no open quantity
-                  required={formData.transactions.reduce((sum, t) => sum + (t.type === "entry" ? Number(t.quantity) : -Number(t.quantity)), 0) === 0}
+                  required={endDateRequired}
                   type="date"
-                  className="block flex-1 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                 />
                 <input
                   type="time"
-                  className="block w-32 border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 />

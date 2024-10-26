@@ -58,7 +58,7 @@ export default function App() {
         </div>
 
         <Dashboard stats={calculateStats()} />
-        {trades.length > 1 && <PerformanceChart trades={trades} />}
+        {trades.length > 0 && <PerformanceChart trades={trades} />}
         <TradeForm
           onAddTrade={handleAddTrade}
           onUpdateTrade={handleUpdateTrade}

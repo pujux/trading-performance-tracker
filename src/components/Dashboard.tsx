@@ -41,7 +41,7 @@ export default function Dashboard({ stats }: DashboardProps) {
       <div className="p-6 bg-white rounded-lg shadow-sm">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Avg Return</p>
+            <p className="text-sm font-medium text-gray-600">Average Return</p>
             <p className={`text-2xl font-semibold ${stats.averageReturn >= 0 ? "text-green-600" : "text-red-600"}`}>
               {(stats.averageReturn * 100).toFixed(2)}%
             </p>

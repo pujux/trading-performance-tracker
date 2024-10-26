@@ -3,6 +3,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import type { Trade } from "../types/trade";
 import { calculatePnL } from "../utils/misc";
 import { Payload } from "recharts/types/component/DefaultLegendContent";
+import { ChevronDown, ChevronUp, LineChartIcon } from "lucide-react";
 
 interface PerformanceChartProps {
   trades: Trade[];
@@ -47,9 +48,16 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
   };
 
   return (
-    <div className="p-6 mb-8 bg-white rounded-lg shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">Performance Over Time</h2>
-      <div className="w-full h-[400px]">
+    <details className="mb-8 bg-white rounded-lg shadow-sm group">
+      <summary className="flex items-center justify-between p-6 list-none cursor-pointer">
+        <div className="flex items-center gap-4">
+          <LineChartIcon size={24} className="text-blue-600" />
+          <h2 className="text-lg font-semibold text-gray-900">Performance Over Time</h2>
+        </div>
+        <ChevronUp size={24} className="hidden group-open:block" />
+        <ChevronDown size={24} className="block group-open:hidden" />
+      </summary>
+      <div className="w-full pb-6 aspect-video max-h-96">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -88,6 +96,6 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </details>
   );
 }
