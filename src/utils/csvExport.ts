@@ -14,7 +14,7 @@ export function exportTradesAsCSV(trades: Trade[]) {
         transaction.price.toString(),
         transaction.quantity.toString(),
         trade.startDate,
-        trade.endDate,
+        trade.endDate ?? "",
         trade.strategy,
         trade.notes,
       ]);
