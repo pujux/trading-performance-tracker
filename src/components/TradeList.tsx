@@ -41,8 +41,8 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full overflow-hidden bg-white rounded-lg">
+    <div className="overflow-x-auto rounded-lg">
+      <table className="min-w-full overflow-hidden bg-white">
         <thead className="bg-gray-50">
           <tr>
             <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 uppercase">Actions</th>
@@ -87,14 +87,14 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                       </button>
                       <button
                         onClick={() => onEditTrade(trade)}
-                        className="p-1 text-blue-600 rounded hover:bg-gray-100 hover:text-blue-900"
+                        className="p-1.5 text-blue-600 rounded hover:bg-gray-100 hover:text-blue-900"
                         title="Edit Trade"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => onDeleteTrade(trade.id)}
-                        className="p-1 text-red-600 rounded hover:bg-gray-100 hover:text-red-900"
+                        className="p-1.5 text-red-600 rounded hover:bg-gray-100 hover:text-red-900"
                         title="Remove Trade"
                       >
                         <Trash size={16} />

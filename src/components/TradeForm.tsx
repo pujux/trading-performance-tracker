@@ -332,7 +332,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     required
                     type="number"
                     min="0"
-                    step="0.01"
+                    step="any"
                     className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.price}
                     onChange={(e) => updateTransaction(index, "price", e.target.value)}
@@ -344,7 +344,8 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   <input
                     required
                     type="number"
-                    min="1"
+                    min="0"
+                    step="any"
                     className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.quantity}
                     onChange={(e) => updateTransaction(index, "quantity", e.target.value)}

@@ -1,7 +1,19 @@
 import type { Trade } from "../types/trade";
 
 export function exportTradesAsCSV(trades: Trade[]) {
-  const headers = ["Symbol", "Type", "Category", "Transaction Type", "Price", "Quantity", "Start Date", "End Date", "Strategy", "Notes"];
+  const headers = [
+    "Symbol",
+    "Type",
+    "Category",
+    "Transaction Type",
+    "Price",
+    "Quantity",
+    "Order Cost",
+    "Start Date",
+    "End Date",
+    "Strategy",
+    "Notes",
+  ];
 
   const rows: string[][] = [];
   for (const trade of trades) {
@@ -13,6 +25,7 @@ export function exportTradesAsCSV(trades: Trade[]) {
         transaction.type,
         transaction.price.toString(),
         transaction.quantity.toString(),
+        transaction.orderCost.toString(),
         trade.startDate,
         trade.endDate ?? "",
         trade.strategy,

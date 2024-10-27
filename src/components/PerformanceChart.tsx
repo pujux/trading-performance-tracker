@@ -9,30 +9,60 @@ interface PerformanceChartProps {
   trades: Trade[];
 }
 
+const CATEGORY_COLORS = {
+  Scalp: "#10b981", // emerald-500
+  Swing: "#f59e0b", // amber-500
+  Daytrade: "#6366f1", // indigo-500
+  Position: "#ec4899", // pink-500
+};
+
 export default function PerformanceChart({ trades }: PerformanceChartProps) {
-  const [hiddenLines, setHiddenLines] = useState<Set<string>>(new Set());
+  const [hiddenLines, setHiddenLines] = useState(new Set(Object.keys(CATEGORY_COLORS)));
 
-  const chartData = useMemo(() => {
-    const pnlByDate = trades
+  const { chartData, activeCategories } = useMemo(() => {
+    const categories = [...new Set(trades.map((t) => t.category))];
+    const pnlByDate = new Map<string, { pnl: number; categories: Record<string, number> }>();
+    let runningTotal = 0;
+
+    trades
       .filter((trade) => !!trade.endDate)
-      .reduce((acc, trade) => {
+      .forEach((trade) => {
         const date = new Date(trade.endDate!).toLocaleDateString();
-        acc[date] = (acc[date] || 0) + calculatePnL(trade);
-        return acc;
-      }, {} as Record<string, number>);
+        const pnl = calculatePnL(trade);
 
-    let runningPnL = 0;
-    return Object.keys(pnlByDate)
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .map((date) => {
-        const pnl = pnlByDate[date];
-        runningPnL += pnl;
-        return { date, cpnl: runningPnL, pnl };
+        // Initialize category object for this date if it doesn't exist
+        if (!pnlByDate.has(date)) {
+          pnlByDate.set(date, { pnl: 0, categories: {} });
+        }
+
+        const dateEntry = pnlByDate.get(date)!;
+        dateEntry.pnl += pnl;
+        dateEntry.categories[trade.category] = (dateEntry.categories[trade.category] || 0) + pnl;
       });
+
+    const data = [...pnlByDate.entries()]
+      .sort(([dateA], [dateB]) => +new Date(dateA) - +new Date(dateB))
+      .map(([date, entry]) => {
+        const categoryData = categories.reduce((acc, category) => {
+          acc[category] = entry.categories[category] || 0;
+          return acc;
+        }, {} as Record<string, number>);
+
+        return {
+          date,
+          cpnl: (runningTotal += entry.pnl),
+          pnl: entry.pnl,
+          ...categoryData,
+        };
+      });
+
+    return {
+      chartData: data,
+      activeCategories: categories,
+    };
   }, [trades]);
 
   const handleLegendClick = ({ dataKey }: Payload) => {
-    console.log(dataKey);
     const key = dataKey?.toString();
     if (!key) return;
 
@@ -93,6 +123,19 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}
             />
+
+            {activeCategories.map((category) => (
+              <Line
+                key={category}
+                type="monotone"
+                dataKey={category}
+                hide={hiddenLines.has(category)}
+                name={category}
+                stroke={CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]}
+                strokeWidth={2}
+                dot={false}
+              />
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
