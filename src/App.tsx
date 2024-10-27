@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { LineChart } from "lucide-react";
 import TradeForm from "./components/TradeForm";
 import TradeList from "./components/TradeList";
 import Dashboard from "./components/Dashboard";
@@ -7,6 +6,7 @@ import PerformanceChart from "./components/PerformanceChart";
 import Footer from "./components/Footer";
 import type { Trade, TradeStats, TradeTransaction } from "./types/trade";
 import { calculatePnL, getAveragePrice, getTotalOrderCosts, getTotalQuantity } from "./utils/misc";
+import Header from "./components/Header";
 
 const deserializeTrades = () => {
   const savedTrades = localStorage.getItem("trades");
@@ -95,23 +95,25 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      <div className="flex-1 w-full px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3 mb-8">
-          <LineChart className="text-blue-600" size={32} />
-          <h1 className="text-3xl font-bold text-gray-900">Trading Performance Tracker</h1>
-        </div>
-
-        <Dashboard stats={tradeStats} />
-        {trades.length > 0 && <PerformanceChart trades={trades} />}
-        <TradeForm
-          onAddTrade={handleAddTrade}
-          onUpdateTrade={handleUpdateTrade}
-          trades={trades}
-          editingTrade={editingTrade}
-          onCancelEdit={() => setEditingTrade(null)}
-        />
-        <TradeList trades={trades} onDeleteTrade={handleDeleteTrade} onEditTrade={setEditingTrade} />
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      <Header />
+      <div className="flex-1">
+        <main className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            <Dashboard stats={tradeStats} />
+            {trades.length > 0 && <PerformanceChart trades={trades} />}
+            <TradeForm
+              onAddTrade={handleAddTrade}
+              onUpdateTrade={handleUpdateTrade}
+              trades={trades}
+              editingTrade={editingTrade}
+              onCancelEdit={() => setEditingTrade(null)}
+            />
+            <div className="overflow-hidden bg-white shadow-sm rounded-xl">
+              <TradeList trades={trades} onDeleteTrade={handleDeleteTrade} onEditTrade={setEditingTrade} />
+            </div>
+          </div>
+        </main>
       </div>
       <Footer />
     </div>

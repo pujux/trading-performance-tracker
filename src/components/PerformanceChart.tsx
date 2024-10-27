@@ -82,7 +82,7 @@ export default function PerformanceChart({ trades }: PerformanceChartProps) {
       <summary className="flex items-center justify-between p-6 list-none cursor-pointer">
         <div className="flex items-center gap-4">
           <LineChartIcon size={24} className="text-blue-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Performance Over Time</h2>
+          <h2 className="text-lg font-semibold text-slate-900">Performance Over Time</h2>
         </div>
         <ChevronUp size={24} className="hidden group-open:block" />
         <ChevronDown size={24} className="block group-open:hidden" />
