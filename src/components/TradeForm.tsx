@@ -169,20 +169,19 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
     <div className="mb-8">
       <div className="flex items-center justify-between">
         <button
-          onClick={() => setIsOpen(!isOpen)}
-          disabled={!!editingTrade}
-          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700"
-        >
-          <PlusCircle size={20} />
-          Add Trade
-        </button>
-
-        <button
           onClick={() => exportTradesAsCSV(trades)}
-          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-green-600 rounded-lg hover:bg-green-700"
+          className="flex items-center gap-2 px-4 py-2 text-green-600 transition-colors border border-green-600 rounded-lg hover:bg-green-50"
         >
           <Download size={20} />
           Export CSV
+        </button>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          disabled={!!editingTrade}
+          className="flex items-center gap-2 px-4 py-2 text-white transition-colors bg-blue-600 border border-blue-600 rounded-lg disabled:bg-slate-600 disabled:cursor-not-allowed hover:bg-blue-700"
+        >
+          <PlusCircle size={20} />
+          Add Trade
         </button>
       </div>
 
@@ -201,7 +200,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
               <input
                 required
                 type="text"
-                className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block border-2 px-1 py-0.5 w-full mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 value={formData.symbol}
                 onChange={(e) =>
                   setFormData({
@@ -215,7 +214,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">Type</label>
               <select
-                className="block w-full p-1 mt-1 bg-white border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full p-1 mt-1 bg-white border-2 rounded-md shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
                 value={formData.type}
                 onChange={(e) =>
                   setFormData({
@@ -232,7 +231,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-slate-700">Category</label>
               <select
-                className="block w-full p-1 mt-1 bg-white border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block w-full p-1 mt-1 bg-white border-2 rounded-md shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
                 value={formData.category}
                 onChange={(e) =>
                   setFormData({
@@ -254,13 +253,13 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                 <input
                   required
                   type="date"
-                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
                 />
                 <input
                   type="time"
-                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.startTime}
                   onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 />
@@ -274,13 +273,13 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   // required when no open quantity
                   required={endDateRequired}
                   type="date"
-                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
                 />
                 <input
                   type="time"
-                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="block bg-white flex-auto border-2 px-1 py-0.5 mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   value={formData.endTime}
                   onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 />
@@ -290,7 +289,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <div className="md:col-span-6">
               <label className="block text-sm font-medium text-slate-700">Notes / Learnings</label>
               <textarea
-                className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="block border-2 px-1 py-0.5 w-full mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 rows={3}
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -304,7 +303,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
               <button
                 type="button"
                 onClick={addTransaction}
-                className="flex items-center gap-2 px-3 py-1 text-sm text-blue-600 border border-blue-600 rounded hover:bg-blue-50"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
               >
                 <Plus size={16} />
                 Add Transaction
@@ -317,7 +316,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                   <label className="block text-sm font-medium text-slate-700">Type</label>
                   <select
                     required
-                    className="block w-full p-1 mt-1 border-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="block w-full p-1 mt-1 border-2 rounded-md shadow-sm border-slate-300 focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.type}
                     onChange={(e) => updateTransaction(index, "type", e.target.value as "entry" | "exit")}
                   >
@@ -333,7 +332,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     type="number"
                     min="0"
                     step="any"
-                    className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="block border-2 px-1 py-0.5 w-full mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.price}
                     onChange={(e) => updateTransaction(index, "price", e.target.value)}
                   />
@@ -346,7 +345,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     type="number"
                     min="0"
                     step="any"
-                    className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="block border-2 px-1 py-0.5 w-full mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.quantity}
                     onChange={(e) => updateTransaction(index, "quantity", e.target.value)}
                   />
@@ -359,7 +358,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
                     type="number"
                     min="0"
                     step="0.01"
-                    className="block border-2 px-1 py-0.5 w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="block border-2 px-1 py-0.5 w-full mt-1 border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     value={transaction.orderCost}
                     onChange={(e) => updateTransaction(index, "orderCost", e.target.value)}
                   />
@@ -382,7 +381,7 @@ export default function TradeForm({ onAddTrade, onUpdateTrade, trades, editingTr
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 text-sm font-medium text-slate-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200"
             >
               Cancel
             </button>

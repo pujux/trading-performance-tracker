@@ -42,23 +42,25 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
 
   return (
     <div className="overflow-x-auto rounded-lg">
-      <table className="min-w-full overflow-hidden bg-white">
-        <thead className="bg-gray-50">
+      <table className="min-w-full bg-white">
+        <thead className="border-b bg-slate-50 border-slate-300">
           <tr>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Actions</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Symbol</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Type</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Category</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Avg Entry</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Avg Exit</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Total Qty</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Open Qty</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Order Costs</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">P&L</th>
-            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-slate-500 uppercase">Holding Period</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Symbol</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Type</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Category</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Avg Entry</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Avg Exit</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Total Qty</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Open Qty</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Order Costs</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">P&L</th>
+            <th className="px-6 py-3 text-xs font-medium tracking-wider text-center uppercase text-slate-500">Holding Period</th>
+            <th className="sticky right-0 p-3 text-xs font-medium tracking-wider text-center uppercase bg-slate-50 text-slate-500 before:content-['\00a0'] before:block before:absolute before:inset-0 before:-right-px before:-z-10 before:border-l before:border-slate-300">
+              Actions
+            </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
+        <tbody className="divide-y divide-slate-300">
           {sortedTrades.length === 0 && (
             <tr>
               <td colSpan={11} className="p-6 text-center text-slate-900">
@@ -79,28 +81,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
 
             return (
               <Fragment key={trade.id}>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-slate-500 whitespace-nowrap">
-                    <div className="flex items-center justify-around gap-1">
-                      <button onClick={() => toggleExpand(trade.id)} className="p-1 rounded hover:bg-gray-100">
-                        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                      </button>
-                      <button
-                        onClick={() => onEditTrade(trade)}
-                        className="p-1.5 text-blue-600 rounded hover:bg-gray-100 hover:text-blue-900"
-                        title="Edit Trade"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => onDeleteTrade(trade.id)}
-                        className="p-1.5 text-red-600 rounded hover:bg-gray-100 hover:text-red-900"
-                        title="Remove Trade"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
-                  </td>
+                <tr className="hover:bg-slate-50 group">
                   <td className="px-6 py-4 text-sm font-medium text-slate-900 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       {pnl >= 0 ? <ArrowUpCircle className="text-green-500" size={20} /> : <ArrowDownCircle className="text-red-500" size={20} />}
@@ -130,13 +111,34 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                   <td className="px-6 py-4 text-sm text-right text-slate-500 whitespace-nowrap" title={holdingPeriod.fullPeriod}>
                     {holdingPeriod.shortPeriod}
                   </td>
+                  <td className="sticky right-0 p-4 text-sm bg-white group-hover:bg-slate-50 text-slate-500 whitespace-nowrap before:content-['\00a0'] before:block before:absolute before:inset-0 before:-right-px before:-z-10 before:border-l before:border-slate-300">
+                    <div className="flex items-center justify-around gap-1">
+                      <button onClick={() => toggleExpand(trade.id)} className="p-1 rounded hover:bg-slate-100">
+                        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                      </button>
+                      <button
+                        onClick={() => onEditTrade(trade)}
+                        className="p-1.5 text-blue-600 rounded hover:bg-slate-100 hover:text-blue-900"
+                        title="Edit Trade"
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => onDeleteTrade(trade.id)}
+                        className="p-1.5 text-red-600 rounded hover:bg-slate-100 hover:text-red-900"
+                        title="Remove Trade"
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
                 {isExpanded && (
                   <tr>
-                    <td colSpan={11} className="p-8 bg-gray-50">
+                    <td colSpan={11} className="p-8 bg-slate-50">
                       <div className="flex flex-col gap-4">
                         <h4 className="font-medium text-slate-900">Transactions</h4>
-                        <table className="min-w-full divide-y divide-gray-200">
+                        <table className="min-w-full divide-y divide-slate-300">
                           <thead>
                             <tr>
                               <th className="px-4 py-2 text-xs font-medium text-center text-slate-500">Type</th>
@@ -145,7 +147,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
                               <th className="px-4 py-2 text-xs font-medium text-right text-slate-500">Order Cost</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-gray-200">
+                          <tbody className="divide-y divide-slate-300">
                             {trade.transactions.map((transaction, index) => (
                               <tr key={index}>
                                 <td className="px-4 py-2 text-sm text-center">
