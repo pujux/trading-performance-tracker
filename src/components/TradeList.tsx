@@ -63,7 +63,7 @@ export default function TradeList({ trades, onDeleteTrade, onEditTrade }: TradeL
         <tbody className="divide-y divide-slate-300">
           {sortedTrades.length === 0 && (
             <tr>
-              <td colSpan={11} className="p-6 text-center text-slate-900">
+              <td colSpan={11} className="p-6 md:text-center text-slate-900">
                 No trades to display
               </td>
             </tr>
